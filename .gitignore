@@ -25,3 +25,8 @@ pnpm-debug.log*
 .vscode/
 .idea/
 .gstack/
+
+# design references / handoff — kept locally, not published
+Sello.html
+Sello - Find My for Agents.html
+docs/
