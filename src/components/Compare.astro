@@ -1,0 +1,194 @@
+---
+import { SPEC_URL } from "../consts";
+
+type Mark = "yes" | "no" | "na";
+
+interface Row {
+  project: string;
+  desc: string;
+  marks: [Mark, Mark, Mark, Mark];
+  isSello?: boolean;
+}
+
+const headers = [
+  "Signed by<br/>the service",
+  "Encrypted<br/>to the owner",
+  "Public<br/>transparency log",
+  "Per-action<br/>receipts",
+];
+
+const rows: Row[] = [
+  {
+    project: "Signet",
+    desc: "Co-signs MCP responses, kept in operator-controlled storage",
+    marks: ["yes", "na", "no", "yes"],
+  },
+  {
+    project: "AgentROA",
+    desc: "Publishes to a SCITT log, but signs operator-side and in cleartext",
+    marks: ["no", "no", "yes", "yes"],
+  },
+  {
+    project: "Agent Receipts",
+    desc: "Signs on the agent-platform side",
+    marks: ["no", "na", "na", "yes"],
+  },
+  {
+    project: "IETF SCITT",
+    desc: "The COSE_Sign1 transparency framework Sello builds on",
+    marks: ["na", "na", "yes", "yes"],
+  },
+  {
+    project: "Sello",
+    desc: "The receiver signs, encrypts to the owner, publishes publicly",
+    marks: ["yes", "yes", "yes", "yes"],
+    isSello: true,
+  },
+];
+
+const glyph: Record<Mark, string> = { yes: "✓", no: "✕", na: "·" };
+---
+
+<section class="sec" id="compare">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Related work</span>
+      <h2>Others get one or two of the four. Sello combines all four.</h2>
+    </div>
+    <div class="matrix-scroll reveal">
+      <table class="matrix">
+        <colgroup>
+          <col class="c-row" />
+          <col class="c-prop" />
+          <col class="c-prop" />
+          <col class="c-prop" />
+          <col class="c-prop" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="rowh">Project</th>
+            {headers.map((h) => <th set:html={h} />)}
+          </tr>
+        </thead>
+        <tbody>
+          {
+            rows.map((row) => (
+              <tr class={row.isSello ? "sello" : undefined}>
+                <td class="rowh">
+                  {row.project}
+                  <span class="desc">{row.desc}</span>
+                </td>
+                {row.marks.map((mark) => (
+                  <td class={mark}>{glyph[mark]}</td>
+                ))}
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="matrix-foot">
+      Based on the repository's own related-work summary. Fuller prior-art
+      discussion in <a href={SPEC_URL} target="_blank" rel="noopener"
+        >SPEC.md §12</a
+      >.
+    </p>
+  </div>
+</section>
+
+<style>
+  .matrix-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .matrix {
+    width: 100%;
+    min-width: 660px;
+    border-collapse: collapse;
+    font-size: 14px;
+    table-layout: fixed;
+  }
+
+  .matrix th,
+  .matrix td {
+    padding: 16px 14px;
+    text-align: center;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .matrix col.c-row {
+    width: 40%;
+  }
+
+  .matrix col.c-prop {
+    width: 15%;
+  }
+
+  .matrix thead th {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 500;
+    vertical-align: bottom;
+  }
+
+  .matrix th.rowh,
+  .matrix td.rowh {
+    text-align: left;
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 15.5px;
+  }
+
+  .matrix td.rowh .desc {
+    display: block;
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-top: 3px;
+    line-height: 1.45;
+  }
+
+  .matrix .yes {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 17px;
+  }
+
+  .matrix .no {
+    color: var(--ink-3);
+    font-size: 15px;
+  }
+
+  .matrix .na {
+    color: var(--line);
+  }
+
+  .matrix tr.sello {
+    background: var(--accent-bg);
+  }
+
+  .matrix tr.sello td {
+    border-bottom-color: var(--accent-dim);
+  }
+
+  .matrix tr.sello .rowh {
+    color: var(--accent);
+  }
+
+  .matrix-foot {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--ink-3);
+    margin-top: 16px;
+  }
+
+  .matrix-foot a {
+    color: var(--accent);
+  }
+</style>

@@ -1,0 +1,102 @@
+---
+import GitHubIcon from "../icons/GitHubIcon.astro";
+import FindMyPanel from "./FindMyPanel.astro";
+import { REPO_URL } from "../../consts";
+---
+
+<span id="top"></span>
+<header class="hero">
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">The mental model</span>
+        <h1>Find&nbsp;My, for <span class="hl">AI agents</span></h1>
+        <p class="lead">
+          An AirTag never trusts the bag it's in to report where it is. The
+          network around it does. Sello works the same way: every service your
+          agent touches drops a sealed, verifiable
+          <em>sighting</em> that only you can open. See where your agents went, and
+          prove it.
+        </p>
+        <div class="hero-cta">
+          <a
+            class="btn btn-primary"
+            href={REPO_URL}
+            target="_blank"
+            rel="noopener"
+          >
+            <GitHubIcon />
+            View on GitHub
+          </a>
+          <a class="btn btn-ghost" href="/">Back to the protocol</a>
+        </div>
+      </div>
+
+      <div>
+        <FindMyPanel />
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  .hero {
+    padding: 92px 0 84px;
+    position: relative;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: center;
+  }
+
+  .hero h1 {
+    font-size: clamp(36px, 5vw, 62px);
+    margin: 24px 0 0;
+    max-width: 13ch;
+  }
+
+  .hero h1 .hl {
+    color: var(--accent);
+  }
+
+  .hero p.lead {
+    font-size: 18.5px;
+    color: var(--ink-2);
+    margin-top: 24px;
+    max-width: 50ch;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 14px;
+    margin-top: 34px;
+    flex-wrap: wrap;
+  }
+
+  /* Concept hero centers its grid glow toward the panel (top-right). */
+  .hero .bg-grid {
+    -webkit-mask-image: radial-gradient(
+      circle at 75% 30%,
+      black,
+      transparent 60%
+    );
+    mask-image: radial-gradient(circle at 75% 30%, black, transparent 60%);
+  }
+
+  @media (max-width: 980px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .hero {
+      padding: 56px 0 52px;
+    }
+  }
+</style>

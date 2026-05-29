@@ -1,0 +1,246 @@
+---
+const nodes = [
+  {
+    role: "Agent",
+    title: "Calls a service",
+    body: "Makes a request with its authorization token, carrying the owner's public key and trusted logs.",
+  },
+  {
+    role: "Service",
+    title: "Signs a receipt",
+    body: "Builds the receipt, encrypts it to the owner with HPKE, and signs the envelope with its own key.",
+  },
+  {
+    role: "Transparency log",
+    title: "Stores it",
+    body: "The signed envelope lands in an owner-trusted, append-only log that returns inclusion proofs.",
+  },
+  {
+    role: "Owner",
+    title: "Verifies it",
+    body: "Queries trusted logs, verifies inclusion and the signature, then decrypts with the private key.",
+  },
+];
+---
+
+<section class="sec" id="how">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">How it works</span>
+      <h2>One receipt, four hands, zero trust in the agent.</h2>
+    </div>
+
+    <div class="flow" id="flow">
+      {
+        nodes.map((node, i) => (
+          <div class="node" data-step={i}>
+            {i < nodes.length - 1 && <div class="connector" />}
+            <div class="node-num">{i + 1}</div>
+            <div class="role">{node.role}</div>
+            <h3>{node.title}</h3>
+            <p>{node.body}</p>
+          </div>
+        ))
+      }
+      <div class="flow-token" id="flowToken">receipt</div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .flow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin-top: 12px;
+    position: relative;
+  }
+
+  .node {
+    position: relative;
+    padding: 28px 24px 30px;
+    border: 1px solid var(--line-soft);
+    border-radius: 12px;
+    background: var(--bg-2);
+    opacity: 0.32;
+    transform: translateY(10px);
+    transition:
+      opacity 0.5s,
+      transform 0.5s,
+      border-color 0.5s;
+    margin: 0 8px;
+  }
+
+  .node.lit {
+    opacity: 1;
+    transform: none;
+    border-color: var(--line);
+  }
+
+  .node.lit .node-num {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+
+  .node-num {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    display: grid;
+    place-items: center;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-2);
+    transition: all 0.5s;
+    margin-bottom: 18px;
+  }
+
+  .node h3 {
+    font-size: 18px;
+  }
+
+  .node .role {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-dim);
+    margin-bottom: 6px;
+  }
+
+  .node p {
+    font-size: 14px;
+    color: var(--ink-2);
+    margin-top: 10px;
+    line-height: 1.55;
+  }
+
+  .connector {
+    position: absolute;
+    top: 44px;
+    right: -8px;
+    width: 16px;
+    height: 1px;
+    background: var(--line);
+    z-index: 2;
+  }
+
+  .connector::after {
+    content: "\2192";
+    position: absolute;
+    right: -3px;
+    top: -10px;
+    color: var(--ink-3);
+    font-size: 14px;
+    font-family: var(--font-mono);
+  }
+
+  .flow-token {
+    position: absolute;
+    left: 0;
+    top: 40px;
+    z-index: 5;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    background: var(--accent-bg);
+    padding: 4px 9px;
+    border-radius: 999px;
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 860px) {
+    .flow {
+      grid-template-columns: 1fr;
+    }
+
+    .node {
+      margin: 0 0 14px;
+    }
+
+    .connector {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const flow = document.getElementById("flow");
+  const token = document.getElementById("flowToken");
+
+  if (flow && token) {
+    const nodes = [...flow.querySelectorAll<HTMLElement>(".node")];
+    const tokenLabels = ["call", "sign + seal", "store", "verify ✓"];
+    let played = false;
+
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    function positionToken(i: number) {
+      const node = nodes[i];
+      if (!node || !flow || !token) return;
+      const fr = flow.getBoundingClientRect();
+      const nr = node.getBoundingClientRect();
+      token.style.left =
+        nr.left - fr.left + nr.width / 2 - token.offsetWidth / 2 + "px";
+      token.style.top = nr.top - fr.top - 18 + "px";
+    }
+
+    function playFlow() {
+      if (played || !token) return;
+      played = true;
+
+      if (reducedMotion) {
+        nodes.forEach((n) => n.classList.add("lit"));
+        return;
+      }
+
+      nodes.forEach((node, i) => {
+        setTimeout(
+          () => {
+            node.classList.add("lit");
+            token.textContent = tokenLabels[i] ?? "receipt";
+            positionToken(i);
+            token.style.transition =
+              i === 0
+                ? "none"
+                : "left .55s cubic-bezier(.4,0,.2,1), top .55s cubic-bezier(.4,0,.2,1)";
+            token.style.opacity = "1";
+            if (i === nodes.length - 1) {
+              setTimeout(() => {
+                token.style.transition = "opacity .5s";
+                token.style.opacity = "0";
+              }, 900);
+            }
+          },
+          350 + i * 850,
+        );
+      });
+    }
+
+    const flowIO = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            playFlow();
+            flowIO.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.4 },
+    );
+    flowIO.observe(flow);
+
+    window.addEventListener("resize", () => {
+      if (played && !reducedMotion) positionToken(nodes.length - 1);
+    });
+  }
+</script>

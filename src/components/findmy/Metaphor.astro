@@ -1,0 +1,112 @@
+---
+const cards = [
+  {
+    from: "The AirTag",
+    to: "The sealed receipt",
+    desc: "A tiny, tamper-evident token of presence. Here, each service stamps what it observed into a signed COSE envelope the agent can't forge.",
+  },
+  {
+    from: "The crowdsourced network",
+    to: "The services + transparency logs",
+    desc: "Passing iPhones relay an AirTag's pings. Here, the services your agent calls relay sealed sightings into append-only public logs.",
+  },
+  {
+    from: '"Last seen" pings',
+    to: "Verified sightings",
+    desc: "Every location report is a discrete, attributable event. Here, every action is a receipt signed by the service that saw it, with a verifiable time.",
+  },
+  {
+    from: "End-to-end encryption",
+    to: "HPKE to the owner",
+    desc: "Apple can't see your stuff's location. Here, the network and the logs carry your trail, but only your key can decrypt what actually happened.",
+  },
+];
+---
+
+<section class="sec" id="mapping">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">The metaphor</span>
+      <h2>The same trick AirTags pull, for agent activity.</h2>
+      <p>
+        Find My already solved "track a thing you don't control, privately,
+        using a network you don't own." Map it onto agents and you get Sello.
+      </p>
+    </div>
+    <div class="maps">
+      {
+        cards.map((card) => (
+          <div class="mapcard reveal">
+            <div class="mc-from">
+              <span class="tg">Find My</span> {card.from}
+            </div>
+            <div class="mc-to">{card.to}</div>
+            <p class="mc-desc">{card.desc}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .maps {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+
+  .mapcard {
+    border: 1px solid var(--line-soft);
+    border-radius: 14px;
+    background: var(--bg-2);
+    padding: 26px;
+    transition:
+      border-color 0.2s,
+      transform 0.2s;
+  }
+
+  .mapcard:hover {
+    border-color: var(--line);
+    transform: translateY(-2px);
+  }
+
+  .mc-from {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .mc-from .tg {
+    color: var(--blue);
+    border: 1px solid var(--blue-dim);
+    border-radius: 5px;
+    padding: 2px 7px;
+    font-size: 9.5px;
+  }
+
+  .mc-to {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 21px;
+    color: var(--accent);
+    margin-top: 14px;
+  }
+
+  .mc-desc {
+    color: var(--ink-2);
+    font-size: 14.5px;
+    margin-top: 10px;
+  }
+
+  @media (max-width: 760px) {
+    .maps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

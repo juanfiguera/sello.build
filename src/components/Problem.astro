@@ -1,0 +1,132 @@
+---
+
+---
+
+<section class="sec" id="why">
+  <div class="wrap problem-grid">
+    <div class="reveal">
+      <span class="eyebrow">The problem</span>
+      <p class="quote">
+        Most agent logs are written by <span class="flag">the same system</span> whose
+        behavior they describe.
+      </p>
+      <p class="problem-body">
+        If the agent, runtime, or operator is compromised, those logs can be
+        incomplete or false. So Sello flips who holds the pen.
+      </p>
+    </div>
+    <div class="reveal invert">
+      <span class="lbl">The architectural inversion</span>
+      <div class="row">
+        <span class="arr">before</span><span
+          >agent writes <b>its own log</b></span
+        >
+      </div>
+      <div class="row">
+        <span class="arr">after</span><span
+          >service signs <b class="accent">the receipt it observed</b></span
+        >
+      </div>
+      <div class="spacer"></div>
+      <div class="foot">
+        The service was present for the action, but sits outside the agent's
+        logging path. It signs what it saw, and nothing it didn't.
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .quote {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(24px, 3.2vw, 38px);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    max-width: 22ch;
+    margin-top: 24px;
+  }
+
+  .flag {
+    color: var(--ink);
+    text-decoration: underline wavy var(--danger);
+    text-underline-offset: 6px;
+    text-decoration-thickness: 2px;
+  }
+
+  .problem-body {
+    color: var(--ink-2);
+    margin-top: 26px;
+    max-width: 46ch;
+    font-size: 17px;
+  }
+
+  .invert {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--bg-2);
+    padding: 26px;
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    color: var(--ink-2);
+    line-height: 1.9;
+  }
+
+  .invert .lbl {
+    color: var(--accent);
+    display: block;
+    margin-bottom: 16px;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .invert .row {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+  }
+
+  .invert .row + .row {
+    margin-top: 10px;
+  }
+
+  .invert .arr {
+    color: var(--ink-3);
+    width: 56px;
+    flex: none;
+  }
+
+  .invert b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .invert b.accent {
+    color: var(--accent);
+  }
+
+  .invert .spacer {
+    height: 16px;
+  }
+
+  .invert .foot {
+    color: var(--ink-3);
+    font-size: 12.5px;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 880px) {
+    .problem-grid {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+  }
+</style>

@@ -1,0 +1,9 @@
+---
+interface Props {
+  size?: number;
+}
+const { size } = Astro.props;
+const style = size ? `width:${size}px;height:${size}px;` : undefined;
+---
+
+<span class="seal" aria-hidden="true" style={style}></span>

@@ -1,0 +1,140 @@
+---
+// Hair spaces let the base64-ish blob wrap without visible breaks.
+const cipher =
+  "hpke:Aq8f3k2Lx9pQ7wZ1nB6vR0sT4mYcJ8d&hairsp;Hn5oW2eK1aD9fG3hL7jP0qS4uX6zC8vN&hairsp;b2M5tR8yU1iO3pA7sD9fG2hJ4kL6mZ0xC&hairsp;v3B5nM8qW1eR4tY7uI0oP2aS5dF8gH1jK&hairsp;9lZ3xC6vB2nM4qW7eR0tY3uI6oP9aS2dF";
+
+const decrypted = [
+  "{",
+  '&nbsp;&nbsp;<span class="k">"service"</span>: <span class="s">"db.internal/query"</span>,',
+  '&nbsp;&nbsp;<span class="k">"action-type"</span>: <span class="s">"tools/call"</span>,',
+  '&nbsp;&nbsp;<span class="k">"result-status"</span>: <span class="s">"success"</span>,',
+  '&nbsp;&nbsp;<span class="k">"seen-at"</span>: <span class="s">"11:06:02Z"</span>,',
+  '&nbsp;&nbsp;<span class="k">"verified"</span>: <span class="true">true</span>',
+  "}",
+].join("<br/>");
+---
+
+<section class="sec" id="privacy">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Privacy</span>
+      <h2>Only you hold the key.</h2>
+      <p>
+        The trail is public enough to prove and private enough to trust. Anyone
+        can confirm a sighting exists. Only your key reveals what it says.
+      </p>
+    </div>
+    <div class="priv-grid">
+      <div class="pcard locked reveal">
+        <div class="pcard-head">
+          <span class="who">What the network stores</span><span class="tag"
+            >🔒 ciphertext</span
+          >
+        </div>
+        <div class="pcard-body"><div class="cipher" set:html={cipher} /></div>
+        <p class="pcaption">
+          Every observer, every log, every passerby sees only this. Sealed to
+          your key with HPKE.
+        </p>
+      </div>
+      <div class="pcard open reveal">
+        <div class="pcard-head">
+          <span class="who">What your key reveals</span><span class="tag"
+            >✓ decrypted</span
+          >
+        </div>
+        <div class="pcard-body" set:html={decrypted} />
+        <p class="pcaption">
+          Held only by the owner. The signature proves who sealed it; the log
+          proves it existed.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .priv-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+  }
+
+  .pcard {
+    border: 1px solid var(--line-soft);
+    border-radius: 14px;
+    background: var(--bg-2);
+    overflow: hidden;
+  }
+
+  .pcard-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line-soft);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .pcard-head .who {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .pcard-head .tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 5px;
+  }
+
+  .pcard.locked .tag {
+    color: var(--ink-3);
+    border: 1px solid var(--line);
+  }
+
+  .pcard.open .tag {
+    color: var(--accent);
+    border: 1px solid var(--accent-dim);
+  }
+
+  .pcard-body {
+    padding: 20px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.85;
+    min-height: 196px;
+  }
+
+  /* Injected via set:html, so target with :global under the scoped parent. */
+  .pcard-body :global(.cipher) {
+    color: var(--ink-3);
+    word-break: break-all;
+    filter: blur(0.4px);
+    opacity: 0.65;
+  }
+
+  .pcard.open .pcard-body :global(.k) {
+    color: var(--ink-3);
+  }
+  .pcard.open .pcard-body :global(.s) {
+    color: var(--blue);
+  }
+  .pcard.open .pcard-body :global(.true) {
+    color: var(--accent);
+  }
+
+  .pcaption {
+    font-size: 13px;
+    color: var(--ink-3);
+    padding: 0 20px 18px;
+  }
+
+  @media (max-width: 820px) {
+    .priv-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

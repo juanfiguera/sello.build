@@ -1,0 +1,216 @@
+---
+const fields = [
+  { k: "service", v: "example.com/tool/v1" },
+  { k: "action-type", v: "tools/call" },
+  { k: "result-status", v: "success" },
+  { k: "sello_token_ref", v: "sha256:9f3c…" },
+];
+
+const notes = [
+  {
+    swatch: "var(--accent)",
+    title: "The signature is the service's",
+    body: "A COSE_Sign1 envelope the service signs with its own key. It never needs the owner's private key.",
+  },
+  {
+    swatch: "oklch(0.80 0.10 200)",
+    title: "The contents are the owner's",
+    body: "The body is HPKE-encrypted to the owner's public key, so only the owner can read what happened.",
+  },
+  {
+    swatch: "var(--ink-3)",
+    title: "The record is public",
+    body: "The envelope sits in a transparency log. Anyone can confirm it exists; only the owner can decrypt it.",
+  },
+];
+---
+
+<section class="sec" id="anatomy">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Anatomy of a receipt</span>
+      <h2>Signed on the outside. Sealed on the inside.</h2>
+    </div>
+
+    <div class="anatomy-grid">
+      <div class="reveal">
+        <div class="layer layer-cose">
+          <span class="layer-tag"
+            >COSE_Sign1 envelope · signed by the service</span
+          >
+          <div class="layer layer-hpke">
+            <span class="layer-tag">HPKE · encrypted to the owner</span>
+            <div class="layer layer-cbor">
+              <span class="layer-tag">CBOR receipt body</span>
+              <div class="cbor-fields">
+                {
+                  fields.map((field) => (
+                    <div class="f">
+                      <span class="fk">{field.k}</span>
+                      <span class="fv">{field.v}</span>
+                    </div>
+                  ))
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="log-tag">
+          <span class="pin">▸</span> published to an append-only transparency log,
+          returning an inclusion proof
+        </div>
+      </div>
+
+      <div class="anatomy-notes reveal">
+        {
+          notes.map((note) => (
+            <div class="an-note">
+              <span class="sw" style={`background:${note.swatch};`} />
+              <div>
+                <h3>{note.title}</h3>
+                <p>{note.body}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .anatomy-grid {
+    display: grid;
+    grid-template-columns: 1fr 0.85fr;
+    gap: 56px;
+    align-items: center;
+  }
+
+  .layer {
+    border-radius: 12px;
+    position: relative;
+  }
+
+  .layer-cose {
+    border: 1px solid var(--accent-dim);
+    background: oklch(0.8 0.15 158 / 0.06);
+    padding: 40px 22px 22px;
+  }
+
+  .layer-hpke {
+    border: 1px dashed oklch(0.8 0.1 200 / 0.6);
+    background: oklch(0.8 0.1 200 / 0.05);
+    padding: 40px 20px 20px;
+  }
+
+  .layer-cbor {
+    border: 1px solid var(--line);
+    background: var(--bg-2);
+    padding: 40px 20px 20px;
+  }
+
+  .layer-tag {
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .layer-cose > .layer-tag {
+    color: var(--accent);
+  }
+
+  .layer-hpke > .layer-tag {
+    color: oklch(0.8 0.1 200);
+  }
+
+  .layer-cbor > .layer-tag {
+    color: var(--ink-3);
+  }
+
+  .cbor-fields {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    display: grid;
+    gap: 8px;
+  }
+
+  .cbor-fields .f {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    border-bottom: 1px dashed var(--line-soft);
+    padding-bottom: 8px;
+  }
+
+  .cbor-fields .f:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .cbor-fields .fk {
+    color: var(--ink-3);
+  }
+
+  .cbor-fields .fv {
+    color: var(--ink);
+  }
+
+  .log-tag {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--ink-2);
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    padding: 11px 14px;
+    background: var(--bg-2);
+  }
+
+  .log-tag .pin {
+    color: var(--accent);
+  }
+
+  .anatomy-notes {
+    display: grid;
+    gap: 22px;
+  }
+
+  .an-note {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .an-note .sw {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    margin-top: 5px;
+  }
+
+  .an-note h3 {
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  .an-note p {
+    color: var(--ink-2);
+    font-size: 14.5px;
+    margin-top: 4px;
+  }
+
+  @media (max-width: 900px) {
+    .anatomy-grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+</style>

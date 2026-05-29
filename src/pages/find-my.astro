@@ -1,0 +1,41 @@
+---
+import Base from "../layouts/Base.astro";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+import FindMyHero from "../components/findmy/FindMyHero.astro";
+import Metaphor from "../components/findmy/Metaphor.astro";
+import Inversion from "../components/findmy/Inversion.astro";
+import Privacy from "../components/findmy/Privacy.astro";
+import ConceptCTA from "../components/findmy/ConceptCTA.astro";
+import { REPO_URL, SPEC_URL } from "../consts";
+
+const navLinks = [
+  { label: "The metaphor", href: "#mapping" },
+  { label: "The network", href: "#network" },
+  { label: "Privacy", href: "#privacy" },
+  { label: "Protocol ↗", href: "/" },
+];
+
+const footerLinks = [
+  { label: "Protocol", href: "/" },
+  { label: "GitHub", href: REPO_URL, external: true },
+  { label: "SPEC.md", href: SPEC_URL, external: true },
+  { label: "Top ↑", href: "#top" },
+];
+---
+
+<Base
+  title="Sello — Find My for AI agents"
+  description="Find My, for AI agents. Every service your agent touches drops a sealed, verifiable sighting only you can open. A concept framing of the Sello protocol."
+>
+  <Nav links={navLinks} tag="Concept" wide />
+  <FindMyHero />
+  <Metaphor />
+  <Inversion />
+  <Privacy />
+  <ConceptCTA />
+  <Footer
+    license="Concept framing · the protocol is Apache 2.0"
+    links={footerLinks}
+  />
+</Base>

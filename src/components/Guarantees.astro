@@ -1,0 +1,144 @@
+---
+const grants = [
+  {
+    title: "A specific service signed it",
+    body: "The COSE signature resolves to a known service signing key.",
+  },
+  {
+    title: "It was encrypted for you",
+    body: "The body is sealed with HPKE to your public key. Only you read it.",
+  },
+  {
+    title: "It is in a trusted log",
+    body: "Inclusion is checked against the transparency log's own proof.",
+  },
+  {
+    title: "The body was not changed",
+    body: "Any edit after signing breaks the signature. Signed equals read.",
+  },
+];
+
+const limits = [
+  "the agent called every service it should have",
+  "that every service is honest",
+  "that an open log index is complete",
+];
+---
+
+<section class="sec" id="guarantees">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">What you can prove</span>
+      <h2>Four things an owner can verify, independently.</h2>
+    </div>
+    <div class="grants">
+      {
+        grants.map((grant) => (
+          <div class="grant reveal">
+            <div class="check">✓</div>
+            <div>
+              <h3>{grant.title}</h3>
+              <p>{grant.body}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="limits reveal">
+      <span class="lbl">It does not claim</span>
+      {limits.map((item) => <span class="item">{item}</span>)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .grants {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+
+  .grant {
+    border: 1px solid var(--line-soft);
+    border-radius: 12px;
+    background: var(--bg-2);
+    padding: 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    transition:
+      border-color 0.2s,
+      transform 0.2s,
+      background 0.2s;
+  }
+
+  .grant:hover {
+    border-color: var(--line);
+    transform: translateY(-2px);
+    background: var(--surface);
+  }
+
+  .grant .check {
+    flex: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1.5px solid var(--accent);
+    color: var(--accent);
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    margin-top: 2px;
+  }
+
+  .grant h3 {
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  .grant p {
+    color: var(--ink-2);
+    font-size: 14px;
+    margin-top: 6px;
+  }
+
+  .limits {
+    margin-top: 26px;
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+    padding: 22px 26px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 28px;
+    align-items: center;
+  }
+
+  .limits .lbl {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .limits .item {
+    display: inline-flex;
+    gap: 9px;
+    color: var(--ink-2);
+    font-size: 13.5px;
+    align-items: baseline;
+  }
+
+  .limits .item::before {
+    content: "\00d7";
+    color: var(--danger);
+    font-family: var(--font-mono);
+  }
+
+  @media (max-width: 760px) {
+    .grants {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

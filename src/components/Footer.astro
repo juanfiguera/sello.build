@@ -1,0 +1,90 @@
+---
+import Seal from "./Seal.astro";
+import { REPO_URL, SPEC_URL, SECURITY_URL } from "../consts";
+
+interface FooterLink {
+  label: string;
+  href: string;
+  external?: boolean;
+}
+
+interface Props {
+  license?: string;
+  links?: FooterLink[];
+}
+
+const {
+  license = "Apache 2.0 · Service-signed encrypted receipts for AI agent actions",
+  links = [
+    { label: "GitHub", href: REPO_URL, external: true },
+    { label: "SPEC.md", href: SPEC_URL, external: true },
+    { label: "Security review", href: SECURITY_URL, external: true },
+    { label: "Top ↑", href: "#top" },
+  ],
+} = Astro.props;
+---
+
+<footer>
+  <div class="wrap foot-inner">
+    <div class="foot-brand">
+      <Seal size={22} />
+      <span class="lic">{license}</span>
+    </div>
+    <div class="foot-links">
+      {
+        links.map((link) => (
+          <a
+            href={link.href}
+            {...(link.external ? { target: "_blank", rel: "noopener" } : {})}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</footer>
+
+<style>
+  footer {
+    border-top: 1px solid var(--line-soft);
+    padding: 40px 0 60px;
+  }
+
+  .foot-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .foot-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .foot-inner .lic {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  .foot-links {
+    display: flex;
+    gap: 24px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    flex-wrap: wrap;
+  }
+
+  .foot-links a {
+    color: var(--ink-2);
+    transition: color 0.18s;
+  }
+
+  .foot-links a:hover {
+    color: var(--accent);
+  }
+</style>

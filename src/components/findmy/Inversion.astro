@@ -1,0 +1,161 @@
+---
+const relay = [
+  { glyph: "◆", label: "agent", kind: "" },
+  { glyph: "⊟", label: "service<br/>signs", kind: "svc" },
+  { glyph: "▤", label: "public<br/>log", kind: "" },
+  { glyph: "⬢", label: "you<br/>verify", kind: "you" },
+];
+---
+
+<section class="sec" id="network">
+  <div class="wrap inv-grid">
+    <div class="reveal">
+      <span class="eyebrow">The key inversion</span>
+      <p class="quote">
+        The finder reports the sighting. <span class="hl"
+          >Never the thing being found.</span
+        >
+      </p>
+      <p class="inv-body">
+        A lost AirTag can't lie about where it is, because it isn't the one
+        talking. The phones around it are. Sello moves the pen the same way: the
+        service that handled the action signs the sighting, so a compromised
+        agent can't quietly rewrite its own trail.
+      </p>
+    </div>
+    <div class="relay reveal">
+      <span class="lbl">One sighting, relayed</span>
+      <div class="relay-row">
+        {
+          relay.map((node, i) => (
+            <>
+              {i > 0 && <span class="relay-arr">→</span>}
+              <div class={`relay-node${node.kind ? ` ${node.kind}` : ""}`}>
+                <div class="rn-ic">{node.glyph}</div>
+                <div class="rn-t" set:html={node.label} />
+              </div>
+            </>
+          ))
+        }
+      </div>
+      <p class="relay-cap">
+        The agent passes through. The <b>service</b> seals what it saw and drops it
+        in a public log. You pull it back later and verify. The agent never holds
+        the pen.
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .inv-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 56px;
+    align-items: center;
+  }
+
+  .quote {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(23px, 3vw, 34px);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    max-width: 20ch;
+    margin-top: 22px;
+  }
+
+  .quote .hl {
+    color: var(--accent);
+  }
+
+  .inv-body {
+    color: var(--ink-2);
+    margin-top: 24px;
+    max-width: 44ch;
+    font-size: 17px;
+  }
+
+  .relay {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--bg-2);
+    padding: 28px 26px;
+  }
+
+  .relay .lbl {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .relay-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .relay-node {
+    flex: 1;
+    text-align: center;
+  }
+
+  .relay-node .rn-ic {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    border: 1.5px solid var(--line);
+    display: grid;
+    place-items: center;
+    margin: 0 auto 9px;
+    color: var(--ink-2);
+    font-family: var(--font-mono);
+    font-size: 16px;
+  }
+
+  .relay-node.svc .rn-ic {
+    border-color: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  .relay-node.you .rn-ic {
+    border-color: var(--blue-dim);
+    color: var(--blue);
+  }
+
+  .relay-node .rn-t {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-2);
+  }
+
+  .relay-arr {
+    color: var(--ink-3);
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+
+  .relay-cap {
+    color: var(--ink-3);
+    font-size: 13px;
+    margin-top: 20px;
+    line-height: 1.7;
+    font-family: var(--font-mono);
+  }
+
+  .relay-cap b {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  @media (max-width: 880px) {
+    .inv-grid {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+  }
+</style>

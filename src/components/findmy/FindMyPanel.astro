@@ -1,0 +1,710 @@
+---
+import Seal from "../Seal.astro";
+
+interface Pin {
+  x: number;
+  y: number;
+  label: string;
+  now?: boolean;
+}
+
+interface Sighting {
+  svc: string;
+  time: string;
+  now?: boolean;
+}
+
+interface AgentTrail {
+  name: string;
+  trail: string;
+  pins: Pin[];
+  sightings: Sighting[];
+}
+
+// Single source of truth: server-renders the first agent and is handed to the
+// client script (via define:vars) for switching, so there is no flash and the
+// panel still shows data with JS disabled.
+const AGENTS: AgentTrail[] = [
+  {
+    name: "research-agent-01",
+    trail: "20,26 73,20 82,62 42,82",
+    pins: [
+      { x: 20, y: 26, label: "maps.api" },
+      { x: 73, y: 20, label: "pay.acme" },
+      { x: 82, y: 62, label: "mail.svc" },
+      { x: 42, y: 82, label: "db.internal · now", now: true },
+    ],
+    sightings: [
+      { svc: "maps.api/geocode", time: "11:02" },
+      { svc: "pay.acme/charge", time: "11:03" },
+      { svc: "mail.svc/send", time: "11:05" },
+      { svc: "db.internal/query", time: "now", now: true },
+    ],
+  },
+  {
+    name: "ops-agent-02",
+    trail: "26,30 70,28 56,78",
+    pins: [
+      { x: 26, y: 30, label: "calendar.api" },
+      { x: 70, y: 28, label: "slack.send" },
+      { x: 56, y: 78, label: "deploy.ci · now", now: true },
+    ],
+    sightings: [
+      { svc: "calendar.api/list", time: "09:14" },
+      { svc: "slack.send/message", time: "09:15" },
+      { svc: "deploy.ci/trigger", time: "2m ago", now: true },
+    ],
+  },
+];
+
+const chips = [
+  { label: "research-agent-01", meta: "· 4 · now" },
+  { label: "ops-agent-02", meta: "· 3 · 2m" },
+];
+
+const first = AGENTS[0];
+---
+
+<div class="findmy">
+  <div class="fm-head">
+    <Seal size={22} />
+    <div class="tabs">
+      <button class="tab on" data-tab="agents">Agents</button>
+      <button class="tab" data-tab="logs">Logs</button>
+    </div>
+    <span class="live"><span class="blip"></span> LIVE TRAIL</span>
+  </div>
+
+  <div class="fm-view" id="view-agents">
+    <div class="agent-rail" id="agentRail">
+      {
+        chips.map((chip, i) => (
+          <button class={`achip${i === 0 ? " on" : ""}`} data-agent={i}>
+            <span class="adot" />
+            {chip.label}
+            <span class="ast">{chip.meta}</span>
+          </button>
+        ))
+      }
+    </div>
+    <div class="map">
+      <div class="mgrid"></div>
+      <div class="rings">
+        <span class="ring r1"></span><span class="ring r2"></span><span
+          class="ring r3"></span>
+      </div>
+      <svg
+        class="trail"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <polyline id="trailLine" points={first.trail}></polyline>
+      </svg>
+      <div class="map-pins" id="mapPins">
+        {
+          first.pins.map((p) => (
+            <div
+              class={`pin${p.now ? " now" : ""}`}
+              style={`left:${p.x}%; top:${p.y}%;`}
+            >
+              <span class="pin-dot">{p.now && <span class="ping" />}</span>
+              <span class="pin-label">{p.label}</span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="sheet">
+      <div class="sheet-grab"></div>
+      <div class="sheet-title" id="sheetTitle">
+        {first.name} · {first.sightings.length} verified sightings
+      </div>
+      <div id="sheetRows">
+        {
+          first.sightings.map((s) => (
+            <div class={`srow${s.now ? " now" : ""}`}>
+              <span class="ic" />
+              <div>
+                <div class="svc">{s.svc}</div>
+                <div class="act">tools/call · result success</div>
+              </div>
+              <div class="meta">
+                <span class="vf">✓ verified</span>
+                <br />
+                {s.time}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="fm-view" id="view-logs" hidden>
+    <div class="logbar">
+      <span class="blip"></span> sello.log/example · append-only · 1,042 entries
+    </div>
+    <div class="logwrap">
+      <div class="loghead">
+        <span>#</span><span>sello_token_ref</span><span>service</span><span
+          >incl.</span
+        ><span>time</span>
+      </div>
+      <div class="logrow">
+        <span class="li">1039</span><span class="hash">sha256:7a1e…c4</span
+        ><span class="lsvc">maps.api/geocode</span><span class="incl">✓</span
+        ><span class="lt">11:02</span>
+      </div>
+      <div class="logrow">
+        <span class="li">1040</span><span class="hash">sha256:b3f0…91</span
+        ><span class="lsvc">pay.acme/charge</span><span class="incl">✓</span
+        ><span class="lt">11:03</span>
+      </div>
+      <div class="logrow">
+        <span class="li">1041</span><span class="hash">sha256:2d8c…7e</span
+        ><span class="lsvc">mail.svc/send</span><span class="incl">✓</span><span
+          class="lt">11:05</span
+        >
+      </div>
+      <div class="logrow now">
+        <span class="li">1042</span><span class="hash">sha256:9f3c…a0</span
+        ><span class="lsvc">db.internal/query</span><span class="incl">✓</span
+        ><span class="lt">now</span>
+      </div>
+    </div>
+    <div class="logroot">
+      <span>merkle root</span><code>sha256:e0c7 4b19 a2f8 6d35 …</code>
+    </div>
+  </div>
+</div>
+
+<script is:inline define:vars={{ AGENTS }}>
+  const mapPins = document.getElementById("mapPins");
+  const trailLine = document.getElementById("trailLine");
+  const sheetTitle = document.getElementById("sheetTitle");
+  const sheetRows = document.getElementById("sheetRows");
+
+  function renderAgent(i) {
+    const a = AGENTS[i];
+    trailLine.setAttribute("points", a.trail);
+    mapPins.innerHTML = a.pins
+      .map(
+        (p) =>
+          `<div class="pin${p.now ? " now" : ""}" style="left:${p.x}%; top:${p.y}%;">` +
+          `<span class="pin-dot">${p.now ? '<span class="ping"></span>' : ""}</span>` +
+          `<span class="pin-label">${p.label}</span></div>`,
+      )
+      .join("");
+    sheetTitle.textContent = `${a.name} · ${a.sightings.length} verified sightings`;
+    sheetRows.innerHTML = a.sightings
+      .map(
+        (s) =>
+          `<div class="srow${s.now ? " now" : ""}"><span class="ic"></span>` +
+          `<div><div class="svc">${s.svc}</div><div class="act">tools/call · result success</div></div>` +
+          `<div class="meta"><span class="vf">✓ verified</span><br/>${s.time}</div></div>`,
+      )
+      .join("");
+  }
+
+  const chips = document.querySelectorAll("#agentRail .achip");
+  chips.forEach((c) =>
+    c.addEventListener("click", () => {
+      chips.forEach((x) => x.classList.toggle("on", x === c));
+      renderAgent(parseInt(c.dataset.agent, 10));
+    }),
+  );
+
+  const tabs = document.querySelectorAll(".fm-head .tab");
+  tabs.forEach((t) =>
+    t.addEventListener("click", () => {
+      tabs.forEach((x) => x.classList.toggle("on", x === t));
+      const which = t.dataset.tab;
+      document.getElementById("view-agents").hidden = which !== "agents";
+      document.getElementById("view-logs").hidden = which !== "logs";
+    }),
+  );
+</script>
+
+<style is:global>
+  /* Namespaced under .findmy (not scoped) because pins and sheet rows are
+     re-rendered client-side via innerHTML; scoped styles would not reach the
+     injected nodes. Keyframes are fm-prefixed to avoid global collisions. */
+  .findmy {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--bg-2);
+    box-shadow: 0 34px 90px -34px rgba(0, 0, 0, 0.75);
+  }
+
+  .findmy .fm-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .findmy .tabs {
+    display: flex;
+    gap: 6px;
+  }
+
+  .findmy .tab {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    color: var(--ink-3);
+    border: 1px solid transparent;
+    background: none;
+    cursor: pointer;
+    transition:
+      color 0.18s,
+      border-color 0.18s,
+      background 0.18s;
+  }
+
+  .findmy .tab:hover {
+    color: var(--ink-2);
+  }
+
+  .findmy .tab.on {
+    color: var(--accent);
+    border-color: var(--accent-dim);
+    background: var(--accent-bg);
+  }
+
+  .findmy .live {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--ink-3);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .findmy .blip {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 var(--accent);
+    animation: fm-blip 2s infinite;
+    flex: none;
+  }
+
+  @keyframes fm-blip {
+    0% {
+      box-shadow: 0 0 0 0 oklch(0.8 0.15 158 / 0.5);
+    }
+    70% {
+      box-shadow: 0 0 0 7px oklch(0.8 0.15 158 / 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 oklch(0.8 0.15 158 / 0);
+    }
+  }
+
+  .findmy .fm-view[hidden] {
+    display: none;
+  }
+
+  .findmy .agent-rail {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line-soft);
+    overflow-x: auto;
+  }
+
+  .findmy .achip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-2);
+    background: none;
+    border: 1px solid var(--line-soft);
+    border-radius: 999px;
+    padding: 6px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+      color 0.18s,
+      border-color 0.18s,
+      background 0.18s;
+  }
+
+  .findmy .achip:hover {
+    border-color: var(--line);
+  }
+
+  .findmy .achip .adot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ink-3);
+    flex: none;
+  }
+
+  .findmy .achip .ast {
+    color: var(--ink-3);
+  }
+
+  .findmy .achip.on {
+    color: var(--accent);
+    border-color: var(--accent-dim);
+    background: var(--accent-bg);
+  }
+
+  .findmy .achip.on .adot {
+    background: var(--accent);
+  }
+
+  .findmy .achip.on .ast {
+    color: var(--accent-dim);
+  }
+
+  .findmy .map {
+    position: relative;
+    height: 360px;
+    background:
+      radial-gradient(
+        circle at 46% 52%,
+        oklch(0.22 0.01 200 / 0.6),
+        transparent 60%
+      ),
+      var(--bg);
+    overflow: hidden;
+  }
+
+  .findmy .mgrid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.35;
+  }
+
+  .findmy .rings {
+    position: absolute;
+    left: 46%;
+    top: 52%;
+    transform: translate(-50%, -50%);
+  }
+
+  .findmy .ring {
+    position: absolute;
+    border: 1px solid var(--blue-dim);
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.35;
+  }
+
+  .findmy .ring.r1 {
+    width: 120px;
+    height: 120px;
+  }
+  .findmy .ring.r2 {
+    width: 240px;
+    height: 240px;
+    opacity: 0.22;
+  }
+  .findmy .ring.r3 {
+    width: 380px;
+    height: 380px;
+    opacity: 0.12;
+  }
+
+  .findmy .trail {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .findmy .trail polyline {
+    fill: none;
+    stroke: var(--accent-dim);
+    stroke-width: 1.4;
+    vector-effect: non-scaling-stroke;
+    stroke-dasharray: 5 5;
+    animation: fm-march 1.4s linear infinite;
+  }
+
+  @keyframes fm-march {
+    to {
+      stroke-dashoffset: -10;
+    }
+  }
+
+  .findmy .pin {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    z-index: 3;
+  }
+
+  .findmy .pin-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1.5px solid var(--accent);
+    background: color-mix(in oklch, var(--bg) 65%, transparent);
+    display: grid;
+    place-items: center;
+    position: relative;
+  }
+
+  .findmy .pin-dot::after {
+    content: "";
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .findmy .pin-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    background: var(--bg-2);
+    border: 1px solid var(--line-soft);
+    padding: 2px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+    color: var(--ink-2);
+  }
+
+  .findmy .pin.now .pin-dot {
+    border-color: var(--blue);
+  }
+  .findmy .pin.now .pin-dot::after {
+    background: var(--blue);
+  }
+  .findmy .pin.now .pin-label {
+    color: var(--blue);
+    border-color: var(--blue-dim);
+  }
+
+  .findmy .pin.now .pin-dot .ping {
+    position: absolute;
+    inset: -1.5px;
+    border-radius: 50%;
+    border: 1.5px solid var(--blue);
+    animation: fm-ping 2.2s ease-out infinite;
+  }
+
+  @keyframes fm-ping {
+    0% {
+      transform: scale(1);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(2.6);
+      opacity: 0;
+    }
+  }
+
+  .findmy .sheet {
+    border-top: 1px solid var(--line-soft);
+    background: var(--bg-2);
+  }
+
+  .findmy .sheet-grab {
+    width: 38px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--line);
+    margin: 10px auto 6px;
+  }
+
+  .findmy .sheet-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    padding: 4px 18px 10px;
+  }
+
+  .findmy .srow {
+    display: grid;
+    grid-template-columns: 30px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 18px;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .findmy .srow .ic {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: 1px solid var(--accent-dim);
+    display: grid;
+    place-items: center;
+  }
+
+  .findmy .srow .ic::after {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+
+  .findmy .srow.now .ic {
+    border-color: var(--blue-dim);
+  }
+  .findmy .srow.now .ic::after {
+    background: var(--blue);
+  }
+
+  .findmy .srow .svc {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--ink);
+  }
+
+  .findmy .srow .act {
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-top: 1px;
+  }
+
+  .findmy .srow .meta {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+
+  .findmy .srow .meta .vf {
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .findmy .srow.now .meta .vf {
+    color: var(--blue);
+  }
+
+  /* LOGS VIEW */
+  .findmy .logbar {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 14px 18px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .findmy .logwrap {
+    padding: 6px 0;
+  }
+
+  .findmy .loghead,
+  .findmy .logrow {
+    display: grid;
+    grid-template-columns: 52px 1fr 1.1fr 40px 52px;
+    gap: 12px;
+    align-items: center;
+    padding: 11px 18px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  .findmy .loghead {
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .findmy .logrow {
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .findmy .logrow .li {
+    color: var(--ink-3);
+  }
+  .findmy .logrow .hash {
+    color: var(--blue);
+  }
+  .findmy .logrow .lsvc {
+    color: var(--ink);
+  }
+  .findmy .logrow .incl {
+    color: var(--accent);
+    text-align: center;
+  }
+  .findmy .logrow .lt {
+    color: var(--ink-3);
+    text-align: right;
+  }
+
+  .findmy .logrow.now {
+    background: oklch(0.8 0.1 200 / 0.06);
+  }
+  .findmy .logrow.now .li {
+    color: var(--blue);
+  }
+
+  .findmy .logroot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    border-top: 1px solid var(--line-soft);
+    background: var(--bg);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+
+  .findmy .logroot code {
+    color: var(--ink-2);
+  }
+
+  @media (max-width: 640px) {
+    .findmy .map {
+      height: 300px;
+    }
+
+    .findmy .loghead,
+    .findmy .logrow {
+      grid-template-columns: 40px 1fr 30px 44px;
+    }
+
+    .findmy .loghead span:nth-child(3),
+    .findmy .logrow .lsvc {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .findmy .blip,
+    .findmy .trail polyline,
+    .findmy .pin.now .pin-dot .ping {
+      animation: none;
+    }
+  }
+</style>
