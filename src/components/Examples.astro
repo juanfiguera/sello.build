@@ -1,0 +1,171 @@
+---
+import { REPO_URL } from "../consts";
+
+const examples = [
+  {
+    label: "Plain tool",
+    title: "Wrap one handler",
+    body: "For HTTP routes, SDK tools, or any function that performs an agent action.",
+    code: 'receipts.tool("calendar.create_event", handler)',
+    href: `${REPO_URL}/blob/main/docs/sdk-quickstart.md`,
+    cta: "SDK quickstart",
+  },
+  {
+    label: "MCP",
+    title: "Wrap tools/call",
+    body: "For services that expose tools through Model Context Protocol servers.",
+    code: 'receipts.mcpTool("calendar.create_event", handler)',
+    href: `${REPO_URL}/blob/main/docs/mcp.md`,
+    cta: "MCP notes",
+  },
+  {
+    label: "A2A",
+    title: "Wrap message/send",
+    body: "For agents that receive Agent2Agent JSON-RPC messages from other agents.",
+    code: "receipts.a2aMessage(handler)",
+    href: `${REPO_URL}/blob/main/docs/a2a.md`,
+    cta: "A2A notes",
+  },
+  {
+    label: "Owner",
+    title: "View actions",
+    body: "Fetch, verify, decrypt, and print the receipts for a local or specified agent token.",
+    code: "npx sello actions",
+    href: `${REPO_URL}#see-logged-actions`,
+    cta: "Action viewer",
+  },
+];
+---
+
+<section class="sec examples" id="examples">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Examples</span>
+      <h2>Pick the boundary you already have.</h2>
+      <p>
+        Sello is meant to sit at the edge of existing agent systems. Wrap the
+        handler, run the action, then verify what was logged.
+      </p>
+    </div>
+
+    <div class="example-grid">
+      {
+        examples.map((example) => (
+          <a
+            class="example-card reveal"
+            href={example.href}
+            target="_blank"
+            rel="noopener"
+          >
+            <span class="label">{example.label}</span>
+            <h3>{example.title}</h3>
+            <p>{example.body}</p>
+            <code>{example.code}</code>
+            <span class="cta">{example.cta} →</span>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .examples {
+    background:
+      linear-gradient(
+        180deg,
+        transparent,
+        color-mix(in oklch, var(--surface) 24%, transparent)
+      ),
+      var(--bg);
+  }
+
+  .example-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .example-card {
+    display: flex;
+    min-height: 280px;
+    flex-direction: column;
+    align-items: flex-start;
+    border: 1px solid var(--line-soft);
+    border-radius: 12px;
+    background: var(--bg-2);
+    padding: 24px;
+    transition:
+      border-color 0.2s,
+      background 0.2s,
+      transform 0.2s;
+  }
+
+  .example-card:hover {
+    border-color: var(--accent-dim);
+    background: var(--surface);
+    transform: translateY(-2px);
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent-dim);
+    border-radius: 5px;
+    padding: 3px 8px;
+  }
+
+  .example-card h3 {
+    font-size: 22px;
+    margin-top: 22px;
+  }
+
+  .example-card p {
+    color: var(--ink-2);
+    font-size: 14.5px;
+    margin-top: 10px;
+  }
+
+  .example-card code {
+    display: block;
+    width: 100%;
+    margin-top: 22px;
+    padding: 12px 13px;
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.45;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .example-card .cta {
+    margin-top: auto;
+    padding-top: 22px;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+  }
+
+  @media (max-width: 980px) {
+    .example-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .example-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .example-card {
+      min-height: 0;
+    }
+  }
+</style>
